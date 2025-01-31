@@ -2,6 +2,10 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+import requests
 
 # Set page layout
 st.set_page_config(layout="wide")
@@ -21,6 +25,23 @@ allocated_credits = {
 # Function to calculate Investability Index manually
 def calculate_manual_index(input_values, allocated_credits):
     return sum(input_values[i] * list(allocated_credits.values())[i] for i in range(len(input_values))) / sum(allocated_credits.values())
+
+# Function to fetch real-time data (example: from APIs or websites)
+def fetch_real_time_data(parameter):
+    try:
+        if parameter == "Market Growth Potential":
+            # Example API for real-time CAGR data
+            response = requests.get("https://api.example.com/industry-cagr")
+            data = response.json()
+            return f"{data['industry']} with a CAGR of {data['cagr']}%."
+        elif parameter == "Profitability":
+            return "Industry average net profit margin is 15%."
+        elif parameter == "Sustainability and ESG":
+            return "Significant focus on green initiatives with improving ESG scores."
+        else:
+            return f"Dynamic benchmark data for {parameter} not available."
+    except:
+        return f"Static insights for {parameter} due to no real-time data."
 
 # Main UI Layout
 with st.container():
@@ -53,23 +74,23 @@ with st.container():
         st.write("### Insights:")
         if manual_index > 7:
             st.write(
-                f"The final Investability Index Score is {manual_index:.2f}/10, indicating a relatively attractive investment opportunity. "
-                f"Investors can use this score to compare with other industries or companies."
+                f"**The final Investability Index Score is {manual_index:.2f}/10, indicating a relatively attractive investment opportunity. "
+                f"Investors can use this score to compare with other industries or companies.**"
             )
         elif 5 <= manual_index <= 7:
             st.write(
-                f"The final Investability Index Score is {manual_index:.2f}/10, indicating a moderate investment opportunity. "
-                f"Improving key areas could enhance investment attractiveness."
+                f"**The final Investability Index Score is {manual_index:.2f}/10, indicating a moderate investment opportunity. "
+                f"Improving key areas could enhance investment attractiveness.**"
             )
         else:
             st.write(
-                f"The final Investability Index Score is {manual_index:.2f}/10, indicating a low investment potential. "
-                f"Significant improvements are required before serious consideration by investors."
+                f"**The final Investability Index Score is {manual_index:.2f}/10, indicating a low investment potential. "
+                f"Significant improvements are required before serious consideration by investors.**"
             )
 
     # Column 2: Radar Chart
     with col2:
-        st.subheader("📊 Parameter Ratings Visualization (Radar Chart)")
+        st.title("📊 Parameter Ratings Visualization")
 
         def plot_radar_chart(scores):
             categories = list(allocated_credits.keys())
@@ -91,27 +112,16 @@ with st.container():
 
     # Column 3: Recommendations
     with col3:
-        st.subheader("📌 Detailed Parameter-Based Recommendations")
-
-        # Mock justifications for each parameter
-        industry_benchmarks = {
-            "Market Growth Potential": "Rated 8/10 (high growth industry with a CAGR of 12%).",
-            "Profitability": "Rated 7/10 (above-average net profit margin of 15%).",
-            "Competitive Advantage": "Rated 9/10 (strong brand and market leadership).",
-            "Management Quality": "Rated 8/10 (experienced team with a proven track record).",
-            "Innovation and R&D": "Rated 6/10 (moderate R&D spend but strong IP portfolio).",
-            "Regulatory Environment": "Rated 5/10 (moderate regulatory risks).",
-            "Financial Stability": "Rated 7/10 (low debt-to-equity ratio of 0.5).",
-            "Sustainability and ESG": "Rated 4/10 (limited ESG initiatives but improving)."
-        }
+        st.title("📌 Detailed Parameter-Based Recommendations")
 
         def generate_insights(parameter, value):
+            real_time_data = fetch_real_time_data(parameter)
             if value >= 8:
-                return f"✅ **{parameter}:** Strong! {industry_benchmarks[parameter]}"
+                return f"✅ **{parameter}:** Strong! {real_time_data}"
             elif value >= 5:
-                return f"⚠️ **{parameter}:** Moderate. {industry_benchmarks[parameter]}"
+                return f"⚠️ **{parameter}:** Moderate. {real_time_data}"
             else:
-                return f"❌ **{parameter}:** Weak. Significant improvement is required."
+                return f"❌ **{parameter}:** Weak. {real_time_data}"
 
         for i, param in enumerate(allocated_credits.keys()):
             st.write(generate_insights(param, input_values[i]))
