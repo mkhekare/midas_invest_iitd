@@ -137,7 +137,6 @@ with st.container():
     with col3:
         st.markdown("### 📌 Detailed Parameter-Based Recommendations")
         def generate_insights(parameter, value):
-    """Generate recommendations dynamically with appropriate wording and industry-specific data."""
     
     # Industry-specific insights only for "Market Growth Potential"
     if parameter == "Market Growth Potential":
