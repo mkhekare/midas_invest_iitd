@@ -20,10 +20,10 @@ allocated_credits = {
 
 # Main container for fixed one-window layout
 with st.container():
-    # Split layout into 2 columns: left for sliders, right for radar chart and recommendations
-    col1, col2 = st.columns([1.2, 1.8])  # Adjust column proportions for better fit
+    # Divide the layout into 3 equal columns
+    col1, col2, col3 = st.columns([1, 1, 1])  # Equal proportions
 
-    # Left Column: Input Sliders
+    # Column 1: Input Sliders
     with col1:
         st.title("📊 Investability Index Calculator")
         st.write("Adjust the sliders to rate each parameter (1-10).")
@@ -57,48 +57,42 @@ with st.container():
         else:
             st.write("❌ **Low Investability:** Business model needs significant improvements before it becomes investable.")
 
-    # Right Column: Radar Chart and Recommendations
+    # Column 2: Radar Chart
     with col2:
-        # Right Column Split: Top for Radar Chart, Bottom for Recommendations
-        top_half, bottom_half = st.columns([1, 1])
+        st.subheader("📊 Parameter Ratings Visualization (Radar Chart)")
 
-        # Top Half: Radar Chart
-        with top_half:
-            st.subheader("📊 Parameter Ratings Visualization (Radar Chart)")
+        def plot_radar_chart(scores):
+            categories = list(allocated_credits.keys())
+            values = scores + scores[:1]  # Close the radar chart loop
+            angles = np.linspace(0, 2 * np.pi, len(categories), endpoint=False).tolist()
+            angles += angles[:1]
 
-            def plot_radar_chart(scores):
-                categories = list(allocated_credits.keys())
-                values = scores + scores[:1]  # Close the radar chart loop
-                angles = np.linspace(0, 2 * np.pi, len(categories), endpoint=False).tolist()
-                angles += angles[:1]
+            fig, ax = plt.subplots(figsize=(2.5, 2.5), subplot_kw=dict(polar=True))  # Compact size
+            ax.fill(angles, values, color="skyblue", alpha=0.4)
+            ax.plot(angles, values, color="blue", linewidth=1.5)
+            ax.set_xticks(angles[:-1])
+            ax.set_xticklabels(categories, fontsize=8, color="black")
+            ax.set_yticks([])
+            ax.grid(color="gray", linestyle="dotted", linewidth=0.5)
+            ax.set_facecolor("#f9f9f9")
 
-                fig, ax = plt.subplots(figsize=(2.5, 2.5), subplot_kw=dict(polar=True))  # Further reduce size
-                ax.fill(angles, values, color="skyblue", alpha=0.4)
-                ax.plot(angles, values, color="blue", linewidth=1.5)
-                ax.set_xticks(angles[:-1])
-                ax.set_xticklabels(categories, fontsize=7, color="black")
-                ax.set_yticks([])
-                ax.grid(color="gray", linestyle="dotted", linewidth=0.5)
-                ax.set_facecolor("#f9f9f9")
-                ax.set_title("Startup Strengths & Weaknesses", fontsize=9, fontweight="bold", pad=10)  # Adjust title placement
+            st.pyplot(fig)
 
-                st.pyplot(fig)
+        plot_radar_chart(input_values)
 
-            plot_radar_chart(input_values)
+    # Column 3: Detailed Recommendations
+    with col3:
+        st.subheader("📌 Detailed Parameter-Based Recommendations")
 
-        # Bottom Half: Detailed Recommendations
-        with bottom_half:
-            st.subheader("📌 Detailed Parameter-Based Recommendations")
+        # Function to generate insights dynamically
+        def generate_insights(parameter, value):
+            if value >= 8:
+                return f"✅ **{parameter}:** Strong! Leverage this as a key strength for investors."
+            elif value >= 5:
+                return f"⚠️ **{parameter}:** Moderate. Improve this area to strengthen investment appeal."
+            else:
+                return f"❌ **{parameter}:** Weak. Requires significant improvement to boost investability."
 
-            # Function to generate insights dynamically
-            def generate_insights(parameter, value):
-                if value >= 8:
-                    return f"✅ **{parameter}:** Strong! Leverage this as a key strength for investors."
-                elif value >= 5:
-                    return f"⚠️ **{parameter}:** Moderate. Improve this area to strengthen investment appeal."
-                else:
-                    return f"❌ **{parameter}:** Weak. Requires significant improvement to boost investability."
-
-            # Display insights for each parameter dynamically
-            for i, param in enumerate(allocated_credits.keys()):
-                st.write(generate_insights(param, input_values[i]))
+        # Display insights for each parameter dynamically
+        for i, param in enumerate(allocated_credits.keys()):
+            st.write(generate_insights(param, input_values[i]))
