@@ -100,16 +100,16 @@ with st.container():
             innovation_rd, regulatory_env, financial_stability, sustainability_esg
         ]
         manual_index = calculate_manual_index(input_values, allocated_credits)
-        st.success(f"**📊 Manual Investability Index Score:** {manual_index:.2f}/10")
+        st.success(f"📊 **Manual Investability Index Score: {manual_index:.2f}/10**")
 
         # Dynamic description based on score
         st.write("### Insights:")
         if manual_index > 7:
-            st.write(f"**✅ The final Investability Index Score is {manual_index:.2f}/10, indicating a relatively attractive investment opportunity.**")
+            st.write(f"🚀 **The final Investability Index Score is {manual_index:.2f}/10, indicating a strong investment opportunity!**")
         elif 5 <= manual_index <= 7:
-            st.write(f"**⚠️ The final Investability Index Score is {manual_index:.2f}/10, indicating a moderate investment opportunity.**")
+            st.write(f"⚠️ **The final Investability Index Score is {manual_index:.2f}/10, indicating a moderate investment opportunity.**")
         else:
-            st.write(f"**❌ The final Investability Index Score is {manual_index:.2f}/10, indicating a low investment potential.**")
+            st.write(f"❌ **The final Investability Index Score is {manual_index:.2f}/10, indicating a low investment potential.**")
 
     # Column 2: Radar Chart
     with col2:
@@ -141,12 +141,12 @@ with st.container():
             if parameter == "Market Growth Potential":
                 industry_info = f"{industry} sector is experiencing {industry_data[industry]['CAGR']} growth."
             else:
-                industry_info = "Improve this area to strengthen investment appeal."
+                industry_info = ""
 
             if value >= 8:
                 return f"✅ **{parameter}:** Strong! Leverage this as a key strength for investors. {industry_info}"
             elif value >= 5:
-                return f"⚠️ **{parameter}:** Moderate. {industry_info}"
+                return f"⚠️ **{parameter}:** Moderate. Improve this area to strengthen investment appeal. {industry_info}"
             else:
                 return f"❌ **{parameter}:** Weak. Requires significant improvement to boost investability. {industry_info}"
 
