@@ -2,10 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error
-import requests
 
 # Set page layout
 st.set_page_config(layout="wide")
@@ -30,16 +26,14 @@ def calculate_manual_index(input_values, allocated_credits):
 def fetch_real_time_data(parameter):
     try:
         if parameter == "Market Growth Potential":
-            # Example API for real-time CAGR data
-            response = requests.get("https://api.example.com/industry-cagr")
-            data = response.json()
-            return f"{data['industry']} with a CAGR of {data['cagr']}%."
+            # Example mock for real-time CAGR data
+            return "High growth industry with a CAGR of 8%."
         elif parameter == "Profitability":
             return "Industry average net profit margin is 15%."
         elif parameter == "Sustainability and ESG":
             return "Significant focus on green initiatives with improving ESG scores."
         else:
-            return f"Dynamic benchmark data for {parameter} not available."
+            return f"No real-time benchmark data for {parameter} is currently available. Please check back later."
     except:
         return f"Static insights for {parameter} due to no real-time data."
 
@@ -49,7 +43,7 @@ with st.container():
 
     # Column 1: Input Sliders
     with col1:
-        st.title("📊 Investability Index Calculator")
+        st.markdown("### 📊 Investability Index Calculator")
         st.write("Adjust the sliders to rate each parameter (1-10).")
 
         # Input sliders
@@ -90,7 +84,7 @@ with st.container():
 
     # Column 2: Radar Chart
     with col2:
-        st.title("📊 Parameter Ratings Visualization")
+        st.markdown("### 📊 Parameter Ratings Visualization")
 
         def plot_radar_chart(scores):
             categories = list(allocated_credits.keys())
@@ -112,7 +106,7 @@ with st.container():
 
     # Column 3: Recommendations
     with col3:
-        st.title("📌 Detailed Parameter-Based Recommendations")
+        st.markdown("### 📌 Detailed Parameter-Based Recommendations")
 
         def generate_insights(parameter, value):
             real_time_data = fetch_real_time_data(parameter)
