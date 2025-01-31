@@ -5,10 +5,13 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
-import joblib
 
-# Set page layout to wide mode
+# Set page layout
 st.set_page_config(layout="wide")
+
+# Load the dataset
+file_path = "Sample_Investability_Index_Dataset.csv"
+df = pd.read_csv(file_path)
 
 # Define allocated credits
 allocated_credits = {
@@ -22,43 +25,39 @@ allocated_credits = {
     "Sustainability and ESG": 2
 }
 
+# Add a computed "Investability Index" column if missing
+if "Investability Index" not in df.columns:
+    df["Investability Index"] = df.apply(
+        lambda row: sum(row[param] * allocated_credits[param] for param in allocated_credits) / sum(allocated_credits.values()), axis=1
+    )
+
+# ML Training
+features = list(allocated_credits.keys())
+target = "Investability Index"
+
+X = df[features]
+y = df[target]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
+rf_model.fit(X_train, y_train)
+y_pred = rf_model.predict(X_test)
+mse = mean_squared_error(y_test, y_pred)
+
+feature_importance = pd.DataFrame({
+    "Feature": features,
+    "Importance": rf_model.feature_importances_
+}).sort_values(by="Importance", ascending=False)
+
 # Function to calculate Investability Index manually
 def calculate_manual_index(input_values, allocated_credits):
     return sum(input_values[i] * list(allocated_credits.values())[i] for i in range(len(input_values))) / sum(allocated_credits.values())
 
-# Load CSV data
-uploaded_file = "your_dataset.csv"  # Replace with your CSV file
-df = pd.read_csv(uploaded_file)
-
-# Train Machine Learning Model
-def train_ml_model(dataframe):
-    features = list(allocated_credits.keys())
-    target = "Investability Index"
-
-    # Split data
-    X = dataframe[features]
-    y = dataframe[target]
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-    # Train Random Forest Regressor
-    model = RandomForestRegressor(n_estimators=100, random_state=42)
-    model.fit(X_train, y_train)
-
-    # Evaluate model
-    y_pred = model.predict(X_test)
-    mse = mean_squared_error(y_test, y_pred)
-
-    return model, mse, pd.DataFrame({"Feature": features, "Importance": model.feature_importances_}).sort_values(by="Importance", ascending=False)
-
-# Train the model and get feature importance
-model, mse, feature_importance = train_ml_model(df)
-
-# Main container
+# Main UI Layout
 with st.container():
-    # Layout: Three equal columns
     col1, col2, col3 = st.columns([1, 1, 1])
 
-    # Column 1: Sliders
+    # Column 1: Input Sliders
     with col1:
         st.title("📊 Investability Index Calculator")
         st.write("Adjust the sliders to rate each parameter (1-10).")
@@ -73,14 +72,12 @@ with st.container():
         financial_stability = st.slider("Financial Stability", 1, 10, 5)
         sustainability_esg = st.slider("Sustainability and ESG", 1, 10, 5)
 
-        # Compute Investability Index
+        # Calculate manual Investability Index
         input_values = [
             market_growth, profitability, competitive_advantage, management_quality,
             innovation_rd, regulatory_env, financial_stability, sustainability_esg
         ]
         manual_index = calculate_manual_index(input_values, allocated_credits)
-
-        # Display manual calculation
         st.success(f"**📊 Manual Investability Index Score:** {manual_index:.2f}")
 
     # Column 2: Radar Chart
@@ -101,7 +98,6 @@ with st.container():
             ax.set_yticks([])
             ax.grid(color="gray", linestyle="dotted", linewidth=0.5)
             ax.set_facecolor("#f9f9f9")
-
             st.pyplot(fig)
 
         plot_radar_chart(input_values)
@@ -118,7 +114,6 @@ with st.container():
             else:
                 return f"❌ **{parameter}:** Weak. Requires significant improvement to boost investability."
 
-        # Display recommendations
         for i, param in enumerate(allocated_credits.keys()):
             st.write(generate_insights(param, input_values[i]))
 
