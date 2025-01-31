@@ -105,11 +105,11 @@ with st.container():
         # Dynamic description based on score
         st.write("### Insights:")
         if manual_index > 7:
-            st.write(f"**The final Investability Index Score is {manual_index:.2f}/10, indicating a relatively attractive investment opportunity.**")
+            st.write(f"**✅ The final Investability Index Score is {manual_index:.2f}/10, indicating a relatively attractive investment opportunity.**")
         elif 5 <= manual_index <= 7:
-            st.write(f"**The final Investability Index Score is {manual_index:.2f}/10, indicating a moderate investment opportunity.**")
+            st.write(f"**⚠️ The final Investability Index Score is {manual_index:.2f}/10, indicating a moderate investment opportunity.**")
         else:
-            st.write(f"**The final Investability Index Score is {manual_index:.2f}/10, indicating a low investment potential.**")
+            st.write(f"**❌ The final Investability Index Score is {manual_index:.2f}/10, indicating a low investment potential.**")
 
     # Column 2: Radar Chart
     with col2:
@@ -136,21 +136,19 @@ with st.container():
     # Column 3: Recommendations
     with col3:
         st.markdown("### 📌 Detailed Parameter-Based Recommendations")
-        def generate_insights(parameter, value):
-    
-    # Industry-specific insights only for "Market Growth Potential"
-    if parameter == "Market Growth Potential":
-        industry_info = f"{industry} sector is experiencing {industry_data[industry]['CAGR']} growth."
-    else:
-        industry_info = "Improve this area to strengthen investment appeal."
 
-    # Generate insights based on value
-    if value >= 8:
-        return f"✅ **{parameter}:** Strong! Leverage this as a key strength for investors. {industry_info}"
-    elif value >= 5:
-        return f"⚠️ **{parameter}:** Moderate. {industry_info}"
-    else:
-        return f"❌ **{parameter}:** Weak. Requires significant improvement to boost investability. {industry_info}"
+        def generate_insights(parameter, value):
+            if parameter == "Market Growth Potential":
+                industry_info = f"{industry} sector is experiencing {industry_data[industry]['CAGR']} growth."
+            else:
+                industry_info = "Improve this area to strengthen investment appeal."
+
+            if value >= 8:
+                return f"✅ **{parameter}:** Strong! Leverage this as a key strength for investors. {industry_info}"
+            elif value >= 5:
+                return f"⚠️ **{parameter}:** Moderate. {industry_info}"
+            else:
+                return f"❌ **{parameter}:** Weak. Requires significant improvement to boost investability. {industry_info}"
 
         for i, param in enumerate(allocated_credits.keys()):
             st.write(generate_insights(param, input_values[i]))
