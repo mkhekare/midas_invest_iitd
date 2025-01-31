@@ -6,6 +6,50 @@ import matplotlib.pyplot as plt
 # Set page layout
 st.set_page_config(layout="wide")
 
+# Industry Benchmark Data
+industry_data = {
+    "Fintech": {
+        "CAGR": "15-20% (Fintech CAGR)",
+        "Market Size": "Projected to grow at 20% CAGR by 2030; strong credit demand and digital banking adoption.",
+        "Growth Drivers": "Digital adoption, rising lending activity, robust credit demand."
+    },
+    "Pharma": {
+        "CAGR": "~30%",
+        "Market Size": "Expected to grow from $372 billion (2023) to $638 billion by 2025.",
+        "Growth Drivers": "Medical tourism, telemedicine, AI diagnostics, rising incomes."
+    },
+    "FMCG": {
+        "CAGR": "9.4%",
+        "Market Size": "Projected to reach $220 billion by 2025; rural FMCG to hit $100 billion.",
+        "Growth Drivers": "Rising disposable incomes, urbanization, online FMCG growth (31% CAGR)."
+    },
+    "Edtech": {
+        "CAGR": "15-18%",
+        "Market Size": "Edtech market expected to reach $10 billion by 2025.",
+        "Growth Drivers": "Online learning penetration, skill-based courses, personalized learning."
+    },
+    "Quick Commerce": {
+        "CAGR": "25-30%",
+        "Market Size": "Projected to grow 10X by 2027, driven by 15-minute deliveries.",
+        "Growth Drivers": "Consumer preference for instant groceries, urban logistics expansion."
+    },
+    "Infrastructure": {
+        "CAGR": ">20% revenue CAGR",
+        "Market Size": "₹111 lakh crore investment by 2025; growth in roads, railways, ports.",
+        "Growth Drivers": "Government capex, NIP projects, PM Gati Shakti initiative."
+    },
+    "EV & Automobiles": {
+        "CAGR": "66.52%",
+        "Market Size": "Projected to reach $113.99 billion by 2029.",
+        "Growth Drivers": "Government incentives, electric mobility transition."
+    },
+    "Renewable Energy": {
+        "CAGR": "~25-30%",
+        "Market Size": "Installed capacity reached 205 GW in 2024; target of 500 GW by 2030.",
+        "Growth Drivers": "Solar and wind energy investments, sustainability focus."
+    }
+}
+
 # Define allocated credits
 allocated_credits = {
     "Market Growth Potential": 12,
@@ -22,29 +66,23 @@ allocated_credits = {
 def calculate_manual_index(input_values, allocated_credits):
     return sum(input_values[i] * list(allocated_credits.values())[i] for i in range(len(input_values))) / sum(allocated_credits.values())
 
-# Function to fetch real-time data (example: from APIs or websites)
-def fetch_real_time_data(parameter):
-    try:
-        if parameter == "Market Growth Potential":
-            # Example mock for real-time CAGR data
-            return "High growth industry with a CAGR of 8%."
-        elif parameter == "Profitability":
-            return "Industry average net profit margin is 15%."
-        elif parameter == "Sustainability and ESG":
-            return "Significant focus on green initiatives with improving ESG scores."
-        else:
-            return f"No real-time benchmark data for {parameter} is currently available. Please check back later."
-    except:
-        return f"Static insights for {parameter} due to no real-time data."
-
 # Main UI Layout
 with st.container():
     col1, col2, col3 = st.columns([1, 1, 1])
 
-    # Column 1: Input Sliders
+    # Column 1: Industry Selection & Input Sliders
     with col1:
         st.markdown("### 📊 Investability Index Calculator")
-        st.write("Adjust the sliders to rate each parameter (1-10).")
+        st.write("Select an industry and adjust the sliders to rate each parameter (1-10).")
+
+        # Industry Selection Dropdown
+        industry = st.selectbox("Select Industry", list(industry_data.keys()))
+
+        # Display Selected Industry Insights
+        st.write(f"**📈 Sector Insights for {industry}:**")
+        st.write(f"- **CAGR:** {industry_data[industry]['CAGR']}")
+        st.write(f"- **Market Size:** {industry_data[industry]['Market Size']}")
+        st.write(f"- **Growth Drivers:** {industry_data[industry]['Growth Drivers']}")
 
         # Input sliders
         market_growth = st.slider("Market Growth Potential", 1, 10, 5)
@@ -67,20 +105,11 @@ with st.container():
         # Dynamic description based on score
         st.write("### Insights:")
         if manual_index > 7:
-            st.write(
-                f"**The final Investability Index Score is {manual_index:.2f}/10, indicating a relatively attractive investment opportunity. "
-                f"Investors can use this score to compare with other industries or companies.**"
-            )
+            st.write(f"**The final Investability Index Score is {manual_index:.2f}/10, indicating a relatively attractive investment opportunity.**")
         elif 5 <= manual_index <= 7:
-            st.write(
-                f"**The final Investability Index Score is {manual_index:.2f}/10, indicating a moderate investment opportunity. "
-                f"Improving key areas could enhance investment attractiveness.**"
-            )
+            st.write(f"**The final Investability Index Score is {manual_index:.2f}/10, indicating a moderate investment opportunity.**")
         else:
-            st.write(
-                f"**The final Investability Index Score is {manual_index:.2f}/10, indicating a low investment potential. "
-                f"Significant improvements are required before serious consideration by investors.**"
-            )
+            st.write(f"**The final Investability Index Score is {manual_index:.2f}/10, indicating a low investment potential.**")
 
     # Column 2: Radar Chart
     with col2:
@@ -109,13 +138,17 @@ with st.container():
         st.markdown("### 📌 Detailed Parameter-Based Recommendations")
 
         def generate_insights(parameter, value):
-            real_time_data = fetch_real_time_data(parameter)
-            if value >= 8:
-                return f"✅ **{parameter}:** Strong! {real_time_data}"
-            elif value >= 5:
-                return f"⚠️ **{parameter}:** Moderate. {real_time_data}"
+            if parameter == "Market Growth Potential":
+                industry_info = f"{industry} sector is experiencing {industry_data[industry]['CAGR']} growth."
             else:
-                return f"❌ **{parameter}:** Weak. {real_time_data}"
+                industry_info = "General insights for this parameter."
+
+            if value >= 8:
+                return f"✅ **{parameter}:** Strong! {industry_info}"
+            elif value >= 5:
+                return f"⚠️ **{parameter}:** Moderate. {industry_info}"
+            else:
+                return f"❌ **{parameter}:** Weak. {industry_info}"
 
         for i, param in enumerate(allocated_credits.keys()):
             st.write(generate_insights(param, input_values[i]))
