@@ -136,19 +136,22 @@ with st.container():
     # Column 3: Recommendations
     with col3:
         st.markdown("### 📌 Detailed Parameter-Based Recommendations")
-
         def generate_insights(parameter, value):
-            if parameter == "Market Growth Potential":
-                industry_info = f"{industry} sector is experiencing {industry_data[industry]['CAGR']} growth."
-            else:
-                industry_info = "General insights for this parameter."
+    """Generate recommendations dynamically with appropriate wording and industry-specific data."""
+    
+    # Industry-specific insights only for "Market Growth Potential"
+    if parameter == "Market Growth Potential":
+        industry_info = f"{industry} sector is experiencing {industry_data[industry]['CAGR']} growth."
+    else:
+        industry_info = "Improve this area to strengthen investment appeal."
 
-            if value >= 8:
-                return f"✅ **{parameter}:** Strong! {industry_info}"
-            elif value >= 5:
-                return f"⚠️ **{parameter}:** Moderate. {industry_info}"
-            else:
-                return f"❌ **{parameter}:** Weak. {industry_info}"
+    # Generate insights based on value
+    if value >= 8:
+        return f"✅ **{parameter}:** Strong! Leverage this as a key strength for investors. {industry_info}"
+    elif value >= 5:
+        return f"⚠️ **{parameter}:** Moderate. {industry_info}"
+    else:
+        return f"❌ **{parameter}:** Weak. Requires significant improvement to boost investability. {industry_info}"
 
         for i, param in enumerate(allocated_credits.keys()):
             st.write(generate_insights(param, input_values[i]))
