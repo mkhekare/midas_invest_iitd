@@ -2,16 +2,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error
 
 # Set page layout
 st.set_page_config(layout="wide")
-
-# Load the dataset
-file_path = "Sample_Investability_Index_Dataset.csv"
-df = pd.read_csv(file_path)
 
 # Define allocated credits
 allocated_credits = {
@@ -24,30 +17,6 @@ allocated_credits = {
     "Financial Stability": 4,
     "Sustainability and ESG": 2
 }
-
-# Add a computed "Investability Index" column if missing
-if "Investability Index" not in df.columns:
-    df["Investability Index"] = df.apply(
-        lambda row: sum(row[param] * allocated_credits[param] for param in allocated_credits) / sum(allocated_credits.values()), axis=1
-    )
-
-# ML Training
-features = list(allocated_credits.keys())
-target = "Investability Index"
-
-X = df[features]
-y = df[target]
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
-rf_model.fit(X_train, y_train)
-y_pred = rf_model.predict(X_test)
-mse = mean_squared_error(y_test, y_pred)
-
-feature_importance = pd.DataFrame({
-    "Feature": features,
-    "Importance": rf_model.feature_importances_
-}).sort_values(by="Importance", ascending=False)
 
 # Function to calculate Investability Index manually
 def calculate_manual_index(input_values, allocated_credits):
@@ -78,7 +47,25 @@ with st.container():
             innovation_rd, regulatory_env, financial_stability, sustainability_esg
         ]
         manual_index = calculate_manual_index(input_values, allocated_credits)
-        st.success(f"**📊 Manual Investability Index Score:** {manual_index:.2f}")
+        st.success(f"**📊 Manual Investability Index Score:** {manual_index:.2f}/10")
+
+        # Dynamic description based on score
+        st.write("### Insights:")
+        if manual_index > 7:
+            st.write(
+                f"The final Investability Index Score is {manual_index:.2f}/10, indicating a relatively attractive investment opportunity. "
+                f"Investors can use this score to compare with other industries or companies."
+            )
+        elif 5 <= manual_index <= 7:
+            st.write(
+                f"The final Investability Index Score is {manual_index:.2f}/10, indicating a moderate investment opportunity. "
+                f"Improving key areas could enhance investment attractiveness."
+            )
+        else:
+            st.write(
+                f"The final Investability Index Score is {manual_index:.2f}/10, indicating a low investment potential. "
+                f"Significant improvements are required before serious consideration by investors."
+            )
 
     # Column 2: Radar Chart
     with col2:
@@ -106,22 +93,25 @@ with st.container():
     with col3:
         st.subheader("📌 Detailed Parameter-Based Recommendations")
 
+        # Mock justifications for each parameter
+        industry_benchmarks = {
+            "Market Growth Potential": "Rated 8/10 (high growth industry with a CAGR of 12%).",
+            "Profitability": "Rated 7/10 (above-average net profit margin of 15%).",
+            "Competitive Advantage": "Rated 9/10 (strong brand and market leadership).",
+            "Management Quality": "Rated 8/10 (experienced team with a proven track record).",
+            "Innovation and R&D": "Rated 6/10 (moderate R&D spend but strong IP portfolio).",
+            "Regulatory Environment": "Rated 5/10 (moderate regulatory risks).",
+            "Financial Stability": "Rated 7/10 (low debt-to-equity ratio of 0.5).",
+            "Sustainability and ESG": "Rated 4/10 (limited ESG initiatives but improving)."
+        }
+
         def generate_insights(parameter, value):
             if value >= 8:
-                return f"✅ **{parameter}:** Strong! Leverage this as a key strength for investors."
+                return f"✅ **{parameter}:** Strong! {industry_benchmarks[parameter]}"
             elif value >= 5:
-                return f"⚠️ **{parameter}:** Moderate. Improve this area to strengthen investment appeal."
+                return f"⚠️ **{parameter}:** Moderate. {industry_benchmarks[parameter]}"
             else:
-                return f"❌ **{parameter}:** Weak. Requires significant improvement to boost investability."
+                return f"❌ **{parameter}:** Weak. Significant improvement is required."
 
         for i, param in enumerate(allocated_credits.keys()):
             st.write(generate_insights(param, input_values[i]))
-
-# Scrollable ML Insights Section
-with st.expander("🔍 Machine Learning Insights"):
-    st.subheader("📊 Feature Importance")
-    st.write("The following shows which parameters most influence the Investability Index, as learned by the machine learning model:")
-    st.dataframe(feature_importance)
-
-    st.subheader("📈 Model Evaluation")
-    st.write(f"Mean Squared Error of the Model: {mse:.2f}")
