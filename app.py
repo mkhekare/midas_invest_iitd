@@ -2,11 +2,15 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+import joblib
 
-# Set page layout to wide mode for better alignment
+# Set page layout to wide mode
 st.set_page_config(layout="wide")
 
-# Define allocated credits for each parameter
+# Define allocated credits
 allocated_credits = {
     "Market Growth Potential": 12,
     "Profitability": 10,
@@ -18,17 +22,48 @@ allocated_credits = {
     "Sustainability and ESG": 2
 }
 
-# Main container for fixed one-window layout
-with st.container():
-    # Divide the layout into 3 equal columns
-    col1, col2, col3 = st.columns([1, 1, 1])  # Equal proportions
+# Function to calculate Investability Index manually
+def calculate_manual_index(input_values, allocated_credits):
+    return sum(input_values[i] * list(allocated_credits.values())[i] for i in range(len(input_values))) / sum(allocated_credits.values())
 
-    # Column 1: Input Sliders
+# Load CSV data
+uploaded_file = "your_dataset.csv"  # Replace with your CSV file
+df = pd.read_csv(uploaded_file)
+
+# Train Machine Learning Model
+def train_ml_model(dataframe):
+    features = list(allocated_credits.keys())
+    target = "Investability Index"
+
+    # Split data
+    X = dataframe[features]
+    y = dataframe[target]
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Train Random Forest Regressor
+    model = RandomForestRegressor(n_estimators=100, random_state=42)
+    model.fit(X_train, y_train)
+
+    # Evaluate model
+    y_pred = model.predict(X_test)
+    mse = mean_squared_error(y_test, y_pred)
+
+    return model, mse, pd.DataFrame({"Feature": features, "Importance": model.feature_importances_}).sort_values(by="Importance", ascending=False)
+
+# Train the model and get feature importance
+model, mse, feature_importance = train_ml_model(df)
+
+# Main container
+with st.container():
+    # Layout: Three equal columns
+    col1, col2, col3 = st.columns([1, 1, 1])
+
+    # Column 1: Sliders
     with col1:
         st.title("📊 Investability Index Calculator")
         st.write("Adjust the sliders to rate each parameter (1-10).")
 
-        # User Input Sliders
+        # Input sliders
         market_growth = st.slider("Market Growth Potential", 1, 10, 5)
         profitability = st.slider("Profitability", 1, 10, 5)
         competitive_advantage = st.slider("Competitive Advantage", 1, 10, 5)
@@ -43,19 +78,10 @@ with st.container():
             market_growth, profitability, competitive_advantage, management_quality,
             innovation_rd, regulatory_env, financial_stability, sustainability_esg
         ]
-        investability_index = sum(input_values[i] * list(allocated_credits.values())[i] for i in range(len(input_values))) / sum(allocated_credits.values())
+        manual_index = calculate_manual_index(input_values, allocated_credits)
 
-        # Display Calculated Investability Score
-        st.success(f"**📊 Investability Index Score:** {investability_index:.2f}")
-
-        # Overall Recommendation
-        st.subheader("🔍 Investment Readiness Insights")
-        if investability_index > 7.0:
-            st.write("✅ **High Investability:** This startup has strong potential. Investors should consider further due diligence.")
-        elif investability_index > 5.0:
-            st.write("⚠️ **Moderate Investability:** Needs improvement in certain areas before serious investment consideration.")
-        else:
-            st.write("❌ **Low Investability:** Business model needs significant improvements before it becomes investable.")
+        # Display manual calculation
+        st.success(f"**📊 Manual Investability Index Score:** {manual_index:.2f}")
 
     # Column 2: Radar Chart
     with col2:
@@ -63,15 +89,15 @@ with st.container():
 
         def plot_radar_chart(scores):
             categories = list(allocated_credits.keys())
-            values = scores + scores[:1]  # Close the radar chart loop
+            values = scores + scores[:1]
             angles = np.linspace(0, 2 * np.pi, len(categories), endpoint=False).tolist()
             angles += angles[:1]
 
-            fig, ax = plt.subplots(figsize=(2.5, 2.5), subplot_kw=dict(polar=True))  # Compact size
+            fig, ax = plt.subplots(figsize=(2.5, 2.5), subplot_kw=dict(polar=True))
             ax.fill(angles, values, color="skyblue", alpha=0.4)
             ax.plot(angles, values, color="blue", linewidth=1.5)
             ax.set_xticks(angles[:-1])
-            ax.set_xticklabels(categories, fontsize=8, color="black")
+            ax.set_xticklabels(categories, fontsize=8)
             ax.set_yticks([])
             ax.grid(color="gray", linestyle="dotted", linewidth=0.5)
             ax.set_facecolor("#f9f9f9")
@@ -80,11 +106,10 @@ with st.container():
 
         plot_radar_chart(input_values)
 
-    # Column 3: Detailed Recommendations
+    # Column 3: Recommendations
     with col3:
         st.subheader("📌 Detailed Parameter-Based Recommendations")
 
-        # Function to generate insights dynamically
         def generate_insights(parameter, value):
             if value >= 8:
                 return f"✅ **{parameter}:** Strong! Leverage this as a key strength for investors."
@@ -93,6 +118,15 @@ with st.container():
             else:
                 return f"❌ **{parameter}:** Weak. Requires significant improvement to boost investability."
 
-        # Display insights for each parameter dynamically
+        # Display recommendations
         for i, param in enumerate(allocated_credits.keys()):
             st.write(generate_insights(param, input_values[i]))
+
+# Scrollable ML Insights Section
+with st.expander("🔍 Machine Learning Insights"):
+    st.subheader("📊 Feature Importance")
+    st.write("The following shows which parameters most influence the Investability Index, as learned by the machine learning model:")
+    st.dataframe(feature_importance)
+
+    st.subheader("📈 Model Evaluation")
+    st.write(f"Mean Squared Error of the Model: {mse:.2f}")
