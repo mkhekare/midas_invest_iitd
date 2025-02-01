@@ -196,14 +196,19 @@ with tab2:
         for company, (industry, score) in st.session_state.selected_companies.items():
             st.write(f"📊 **{company} ({industry})** - Investability Score: {score:.2f}")
 
-        # Allocate Investment
+        # Allocate Investment (Before Currency Conversion)
         total_score = sum(score for _, score in st.session_state.selected_companies.values())
         investments = {company: (score / total_score) * fund_value for company, (_, score) in st.session_state.selected_companies.items()}
 
-        # Display Allocation
-        st.write("### 🏦 Investment Distribution")
+        # ✅ Apply Currency Conversion AFTER Allocation
+        if currency == "USD $":
+            investments = {company: amount / 80 for company, amount in investments.items()}  # Convert to USD
+
+        # Display Corrected Allocation
+        st.write("### 🏦 Investment Distribution (Corrected)")
         for company, investment in investments.items():
             st.write(f"💰 **{company}:** {currency} {investment:,.2f}")
+
 
 # 📈 **TAB 3: Industry Insights**
 with tab3:
