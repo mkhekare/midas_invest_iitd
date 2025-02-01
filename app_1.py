@@ -196,15 +196,18 @@ with tab2:
         for company, (industry, score) in st.session_state.selected_companies.items():
             st.write(f"📊 **{company} ({industry})** - Investability Score: {score:.2f}")
 
-        # Allocate Investment (Before Currency Conversion)
+        # ✅ Step 1: Ensure Fund Scaling is Absolute
+        total_fund = fund_value  # Store the full value (e.g., 10M → 10,000,000)
+
+        # ✅ Step 2: Allocate Investment Before Currency Conversion
         total_score = sum(score for _, score in st.session_state.selected_companies.values())
-        investments = {company: (score / total_score) * fund_value for company, (_, score) in st.session_state.selected_companies.items()}
+        investments = {company: (score / total_score) * total_fund for company, (_, score) in st.session_state.selected_companies.items()}
 
-        # ✅ Apply Currency Conversion AFTER Allocation
+        # ✅ Step 3: Apply Currency Conversion AFTER Correct Scaling
         if currency == "USD $":
-            investments = {company: amount / 80 for company, amount in investments.items()}  # Convert to USD
+            investments = {company: amount / 80 for company, amount in investments.items()}  # Convert INR to USD
 
-        # Display Corrected Allocation
+        # ✅ Step 4: Display Corrected Allocation
         st.write("### 🏦 Investment Distribution (Corrected)")
         for company, investment in investments.items():
             st.write(f"💰 **{company}:** {currency} {investment:,.2f}")
