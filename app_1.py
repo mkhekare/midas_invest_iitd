@@ -29,25 +29,109 @@ if currency == "USD $":
 # Expanded Industry Data (with Real Startups & Giants)
 industry_data = {
     "Fintech": {
-        "CAGR": "15-20%", 
+        "CAGR": "15-20% (2023-2028)", 
         "Market Growth Potential": "🚀 Strong digital adoption", 
         "Profitability": "💰 High",
-        "Description": "Fintech is revolutionizing banking, payments, and lending with AI & blockchain innovations.",
-        "Examples": "Startups: Razorpay, Stripe | Giants: PayPal, Visa"
+        "Description": "Fintech is revolutionizing banking, payments, and lending with AI & blockchain innovations. UPI payments, digital lending, and neobanking are driving financial inclusion.",
+        "Examples": "Startups: Razorpay, CRED, PhonePe | Giants: PayPal, Visa"
     },
     "Pharma": {
-        "CAGR": "30%", 
+        "CAGR": "30% (2023-2027)", 
         "Market Growth Potential": "📈 Growing AI diagnostics", 
         "Profitability": "🔬 R&D Heavy",
-        "Description": "Pharma is booming with AI-driven drug discovery, precision medicine, and biotech advances.",
-        "Examples": "Startups: Tempus, PathAI | Giants: Pfizer, Johnson & Johnson"
+        "Description": "Pharma is booming with AI-driven drug discovery, precision medicine, and biotech advances. Generic drug manufacturing and contract research are key growth drivers.",
+        "Examples": "Startups: Tempus, Innoplexus | Giants: Sun Pharma, Dr. Reddy's"
     },
     "EV & Automobiles": {
-        "CAGR": "66.52%", 
+        "CAGR": "66.52% (2022-2027)", 
         "Market Growth Potential": "🔋 Electric Mobility", 
         "Profitability": "🔧 Tech Intensive",
-        "Description": "EVs are reshaping transportation with battery innovations & government incentives.",
-        "Examples": "Startups: Rivian, Ola Electric | Giants: Tesla, Toyota"
+        "Description": "EVs are reshaping transportation with battery innovations & government incentives. Local manufacturing, charging infrastructure, and battery tech development are driving growth.",
+        "Examples": "Startups: Ather Energy, Ola Electric | Giants: Tata Motors, Mahindra Electric"
+    },
+    "EdTech": {
+        "CAGR": "19.5% (2023-2028)",
+        "Market Growth Potential": "📚 Digital Learning Revolution",
+        "Profitability": "💡 High Customer Acquisition Cost",
+        "Description": "EdTech platforms are transforming education through personalized learning, gamification, and hybrid models. Test prep, upskilling, and K-12 supplementary education are major segments.",
+        "Examples": "Startups: BYJU'S, Unacademy | Giants: Coursera, Duolingo"
+    },
+    "Renewable Energy": {
+        "CAGR": "35.3% (2023-2028)",
+        "Market Growth Potential": "☀️ Clean Energy Transition",
+        "Profitability": "🌱 Government Incentives",
+        "Description": "Solar, wind, and hydrogen energy solutions are driving sustainable development. Policy support, declining costs, and corporate commitments fuel sector growth.",
+        "Examples": "Startups: ReNew Power, Fourth Partner | Giants: Adani Green, Tata Power"
+    },
+    "AgriTech": {
+        "CAGR": "25% (2023-2028)",
+        "Market Growth Potential": "🌾 Farm Digitization",
+        "Profitability": "🚜 Seasonal Variations",
+        "Description": "AgriTech is modernizing farming through IoT sensors, precision agriculture, and supply chain optimization. Digital marketplaces and farm automation drive efficiency.",
+        "Examples": "Startups: DeHaat, Ninjacart | Giants: Bayer, Mahindra Agri"
+    },
+    "SpaceTech": {
+        "CAGR": "41.2% (2023-2028)",
+        "Market Growth Potential": "🛰️ Private Space Economy",
+        "Profitability": "🚀 Capital Intensive",
+        "Description": "Private space exploration, satellite communications, and space tourism are emerging. Small satellite launches and space-based internet drive innovation.",
+        "Examples": "Startups: Skyroot Aerospace, Pixxel | Giants: ISRO, SpaceX"
+    },
+    "HealthTech": {
+        "CAGR": "27.9% (2023-2028)",
+        "Market Growth Potential": "⚕️ Digital Healthcare",
+        "Profitability": "📱 Platform Economics",
+        "Description": "Telemedicine, AI diagnostics, and digital health records are transforming healthcare delivery. Remote monitoring and mental health tech show strong growth.",
+        "Examples": "Startups: Practo, 1mg | Giants: Apollo Hospitals, Philips"
+    },
+    "Cybersecurity": {
+        "CAGR": "13.8% (2023-2028)",
+        "Market Growth Potential": "🔒 Digital Protection",
+        "Profitability": "💪 High Margins",
+        "Description": "Rising cyber threats drive demand for AI-powered security, cloud protection, and zero-trust architecture. Data privacy regulations boost adoption.",
+        "Examples": "Startups: Lucideus, CloudSEK | Giants: Tata Security, Quick Heal"
+    },
+    "Gaming": {
+        "CAGR": "28.6% (2023-2028)",
+        "Market Growth Potential": "🎮 Mobile Gaming Boom",
+        "Profitability": "🎲 Hit-Driven",
+        "Description": "Mobile gaming, esports, and AR/VR experiences drive growth. Real-money gaming and social gaming platforms show strong user engagement.",
+        "Examples": "Startups: Dream11, MPL | Giants: Nazara, Jetsynthesys"
+    },
+    "D2C Brands": {
+        "CAGR": "24.3% (2023-2028)",
+        "Market Growth Potential": "🛍️ Digital-First Retail",
+        "Profitability": "📦 Brand Dependent",
+        "Description": "Direct-to-consumer brands leverage social commerce and personalization. Beauty, fashion, and food segments show strong growth potential.",
+        "Examples": "Startups: Mamaearth, boAt | Giants: Lenskart, Nykaa"
+    },
+    "Cloud Computing": {
+        "CAGR": "17.9% (2023-2028)",
+        "Market Growth Potential": "☁️ Digital Infrastructure",
+        "Profitability": "💻 Scale Advantages",
+        "Description": "Cloud services, edge computing, and serverless architecture drive digital transformation. AI/ML workloads and data analytics fuel demand.",
+        "Examples": "Startups: Druva, Postman | Giants: TCS, Infosys"
+    },
+    "Logistics": {
+        "CAGR": "10.7% (2023-2028)",
+        "Market Growth Potential": "📦 Supply Chain Tech",
+        "Profitability": "🚛 Asset Heavy",
+        "Description": "E-commerce growth drives logistics innovation through AI route optimization, warehouse automation, and last-mile delivery solutions.",
+        "Examples": "Startups: Delhivery, BlackBuck | Giants: Blue Dart, Mahindra Logistics"
+    },
+    "WaterTech": {
+        "CAGR": "8.8% (2023-2028)",
+        "Market Growth Potential": "💧 Water Security",
+        "Profitability": "🌊 Infrastructure Dependent",
+        "Description": "Water treatment, conservation tech, and smart metering address scarcity. Wastewater management and desalination show growing adoption.",
+        "Examples": "Startups: Vasitum, WEGoT | Giants: VA Tech WABAG, Ion Exchange"
+    },
+    "FoodTech": {
+        "CAGR": "22.4% (2023-2028)",
+        "Market Growth Potential": "🍽️ Digital Food Economy",
+        "Profitability": "🍳 Operations Intensive",
+        "Description": "Cloud kitchens, food delivery platforms, and alternative protein solutions transform food services. Tech-enabled supply chain and restaurant tech show promise.",
+        "Examples": "Startups: Swiggy, Zomato | Giants: ITC Foods, Jubilant"
     },
 }
 
