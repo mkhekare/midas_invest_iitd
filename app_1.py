@@ -26,7 +26,7 @@ else:
 if currency == "USD $":
     fund_value /= 80  # Assuming 1 USD = 80 INR for conversion
 
-# Expanded Industry Data (20+ Industries with Startups & Giants)
+# Expanded Industry Data (with Real Startups & Giants)
 industry_data = {
     "Fintech": {
         "CAGR": "15-20%", 
@@ -97,7 +97,7 @@ with tab1:
     # ➕ Add Company Button
     if st.button("➕ Add Company for Investment"):
         if company_name:
-            st.session_state.selected_companies[company_name] = investability_score
+            st.session_state.selected_companies[company_name] = (industry, investability_score)
             st.success(f"✅ **{company_name} added to Investment Allocation!**")
 
 # 💸 **TAB 2: Investment Allocation**
@@ -109,12 +109,12 @@ with tab2:
     else:
         # Display Added Companies
         st.write("🏦 **Selected Companies for Investment:**")
-        for company, score in st.session_state.selected_companies.items():
-            st.write(f"📊 **{company}:** Investability Score - {score:.2f}")
+        for company, (industry, score) in st.session_state.selected_companies.items():
+            st.write(f"📊 **{company} ({industry})** - Investability Score: {score:.2f}")
 
         # Allocate Investment
-        total_score = sum(st.session_state.selected_companies.values())
-        investments = {company: (score / total_score) * fund_value for company, score in st.session_state.selected_companies.items()}
+        total_score = sum(score for _, score in st.session_state.selected_companies.values())
+        investments = {company: (score / total_score) * fund_value for company, (_, score) in st.session_state.selected_companies.items()}
 
         # Display Allocation
         st.write("### 🏦 Investment Distribution")
@@ -125,11 +125,19 @@ with tab2:
 with tab3:
     st.markdown("### 📈 Industry Insights")
 
-    # Auto-populate data based on selection
-    if industry in industry_data:
-        st.markdown(f"🚀 **Sector Overview: {industry}**")
-        st.write(f"📈 **CAGR:** {industry_data[industry]['CAGR']}")
-        st.write(f"🏆 **Market Growth Potential:** {industry_data[industry]['Market Growth Potential']}")
-        st.write(f"💰 **Profitability:** {industry_data[industry]['Profitability']}")
-        st.write(f"📜 **Industry Description:** {industry_data[industry]['Description']}")
-        st.write(f"🏢 **Rising Startups & Giants:** {industry_data[industry]['Examples']}")
+    if not st.session_state.selected_companies:
+        st.warning("⚠️ No companies added yet. Go to the **Index Calculator** and add companies.")
+    else:
+        industries_displayed = set()
+
+        for company, (industry, score) in st.session_state.selected_companies.items():
+            if industry not in industries_displayed:
+                industries_displayed.add(industry)
+
+                # Display Industry Info
+                st.markdown(f"🚀 **Sector Overview: {industry}**")
+                st.write(f"📈 **CAGR:** {industry_data[industry]['CAGR']}")
+                st.write(f"🏆 **Market Growth Potential:** {industry_data[industry]['Market Growth Potential']}")
+                st.write(f"💰 **Profitability:** {industry_data[industry]['Profitability']}")
+                st.write(f"📜 **Industry Description:** {industry_data[industry]['Description']}")
+                st.write(f"🏢 **Rising Startups & Giants:** {industry_data[industry]['Examples']}")
