@@ -26,24 +26,37 @@ else:
 if currency == "USD $":
     fund_value /= 80  # Assuming 1 USD = 80 INR for conversion
 
-# Expanded Industry Data (20+ Industries)
+# Expanded Industry Data (20+ Industries with Startups & Giants)
 industry_data = {
-    "Fintech": {"CAGR": "15-20%", "Market Growth Potential": "🚀 Strong digital adoption", "Profitability": "💰 High"},
-    "Pharma": {"CAGR": "30%", "Market Growth Potential": "📈 Growing AI diagnostics", "Profitability": "🔬 R&D Heavy"},
-    "FMCG": {"CAGR": "9.4%", "Market Growth Potential": "🛍️ Online FMCG Boom", "Profitability": "💸 Consistent"},
-    "Edtech": {"CAGR": "15-18%", "Market Growth Potential": "📚 Digital Learning", "Profitability": "⚖️ Moderate"},
-    "Quick Commerce": {"CAGR": "25-30%", "Market Growth Potential": "🚴 Fast Deliveries", "Profitability": "📊 Growing"},
-    "EV & Automobiles": {"CAGR": "66.52%", "Market Growth Potential": "🔋 Electric Mobility", "Profitability": "🔧 Tech Intensive"},
-    "Renewable Energy": {"CAGR": "25-30%", "Market Growth Potential": "🌱 Sustainability Focus", "Profitability": "💵 Capital Heavy"},
-    "Healthcare AI": {"CAGR": "20%", "Market Growth Potential": "🤖 AI in Diagnostics", "Profitability": "📊 Data Driven"},
-    "Cloud Computing": {"CAGR": "17%", "Market Growth Potential": "☁️ Rising SaaS Adoption", "Profitability": "💡 High Margins"},
-    "Blockchain": {"CAGR": "45%", "Market Growth Potential": "🔗 DeFi & Crypto Growth", "Profitability": "⚖️ Risky but High"},
-    "Space Tech": {"CAGR": "40%", "Market Growth Potential": "🚀 Private Space Missions", "Profitability": "🌍 High Entry Costs"},
-    "Cybersecurity": {"CAGR": "22%", "Market Growth Potential": "🛡️ Rising Data Breaches", "Profitability": "🔒 Stable"},
+    "Fintech": {
+        "CAGR": "15-20%", 
+        "Market Growth Potential": "🚀 Strong digital adoption", 
+        "Profitability": "💰 High",
+        "Description": "Fintech is revolutionizing banking, payments, and lending with AI & blockchain innovations.",
+        "Examples": "Startups: Razorpay, Stripe | Giants: PayPal, Visa"
+    },
+    "Pharma": {
+        "CAGR": "30%", 
+        "Market Growth Potential": "📈 Growing AI diagnostics", 
+        "Profitability": "🔬 R&D Heavy",
+        "Description": "Pharma is booming with AI-driven drug discovery, precision medicine, and biotech advances.",
+        "Examples": "Startups: Tempus, PathAI | Giants: Pfizer, Johnson & Johnson"
+    },
+    "EV & Automobiles": {
+        "CAGR": "66.52%", 
+        "Market Growth Potential": "🔋 Electric Mobility", 
+        "Profitability": "🔧 Tech Intensive",
+        "Description": "EVs are reshaping transportation with battery innovations & government incentives.",
+        "Examples": "Startups: Rivian, Ola Electric | Giants: Tesla, Toyota"
+    },
 }
 
 # Tabs for UI
 tab1, tab2, tab3 = st.tabs(["📊 Index Calculator", "💸 Investment Allocation", "📈 Industry Insights"])
+
+# Global Storage for Selected Companies
+if "selected_companies" not in st.session_state:
+    st.session_state.selected_companies = {}
 
 # 📊 **TAB 1: Investability Index Calculator**
 with tab1:
@@ -78,21 +91,30 @@ with tab1:
     else:
         st.write("❌ **Not recommended for investment.**")
 
+    # Company Name Input
+    company_name = st.text_input("Enter Company Name:", value="")
+
+    # ➕ Add Company Button
+    if st.button("➕ Add Company for Investment"):
+        if company_name:
+            st.session_state.selected_companies[company_name] = investability_score
+            st.success(f"✅ **{company_name} added to Investment Allocation!**")
+
 # 💸 **TAB 2: Investment Allocation**
 with tab2:
     st.markdown("### 💸 Investment Allocation")
 
-    # Select Top 3 Companies
-    company_options = ["Company A", "Company B", "Company C", "Company D", "Company E"]
-    selected_companies = st.multiselect("Select Top 3 Companies", company_options, default=company_options[:3])
-
-    if len(selected_companies) == 3:
-        # Example Scores (Based on User Index Score)
-        scores = {company: investability_score + np.random.uniform(-1, 1) for company in selected_companies}
-        total_score = sum(scores.values())
+    if not st.session_state.selected_companies:
+        st.warning("⚠️ No companies added yet. Go to the **Index Calculator** and add companies.")
+    else:
+        # Display Added Companies
+        st.write("🏦 **Selected Companies for Investment:**")
+        for company, score in st.session_state.selected_companies.items():
+            st.write(f"📊 **{company}:** Investability Score - {score:.2f}")
 
         # Allocate Investment
-        investments = {company: (score / total_score) * fund_value for company, score in scores.items()}
+        total_score = sum(st.session_state.selected_companies.values())
+        investments = {company: (score / total_score) * fund_value for company, score in st.session_state.selected_companies.items()}
 
         # Display Allocation
         st.write("### 🏦 Investment Distribution")
@@ -109,3 +131,5 @@ with tab3:
         st.write(f"📈 **CAGR:** {industry_data[industry]['CAGR']}")
         st.write(f"🏆 **Market Growth Potential:** {industry_data[industry]['Market Growth Potential']}")
         st.write(f"💰 **Profitability:** {industry_data[industry]['Profitability']}")
+        st.write(f"📜 **Industry Description:** {industry_data[industry]['Description']}")
+        st.write(f"🏢 **Rising Startups & Giants:** {industry_data[industry]['Examples']}")
