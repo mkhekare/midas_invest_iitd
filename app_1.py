@@ -134,8 +134,14 @@ with tab3:
             if industry not in industries_displayed:
                 industries_displayed.add(industry)
 
+                # 🎨 Highlighted Sector Overview for Better Visibility
+                st.markdown(f""" 
+                <div style="background-color:#f4f4f4; padding:10px; border-radius:5px; font-weight:bold;">
+                🚀 <span style="color:#e63946;">Sector Overview: {industry}</span>
+                </div>
+                """, unsafe_allow_html=True)
+
                 # Display Industry Info
-                st.markdown(f"🚀 **Sector Overview: {industry}**")
                 st.write(f"📈 **CAGR:** {industry_data[industry]['CAGR']}")
                 st.write(f"🏆 **Market Growth Potential:** {industry_data[industry]['Market Growth Potential']}")
                 st.write(f"💰 **Profitability:** {industry_data[industry]['Profitability']}")
